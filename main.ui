@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>778</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,6 +58,20 @@
      <widget class="QPushButton" name="refresh_button">
       <property name="text">
        <string>Обновить</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="add_button">
+      <property name="text">
+       <string>Добавить</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="edit_button">
+      <property name="text">
+       <string>Редактировать</string>
       </property>
      </widget>
     </item>
