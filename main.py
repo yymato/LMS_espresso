@@ -1,16 +1,19 @@
 import sys
 import sqlite3
-from PyQt6 import uic
+from UI.main_ui import Ui_MainWindow
+from UI.addEditCoffeeForm import Ui_AddEditCoffeeForm
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QDialog
+from PyQt6.QtWidgets import QFileDialog
 
-class CoffeeApp(QMainWindow):
+class CoffeeApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
 
+        self.setupUi(self)
         self.load_data()
         self.refresh_button.clicked.connect(self.load_data)
 
+        self.path = QFileDialog.getOpenFileName(self, 'Open SQl', '', '*.sqlite')
         # Кнопка добавления нового кофе
         self.add_button.clicked.connect(self.add_new_coffee)
 
@@ -18,7 +21,7 @@ class CoffeeApp(QMainWindow):
         self.edit_button.clicked.connect(self.edit_selected_coffee)
 
     def load_data(self):
-        connection = sqlite3.connect('123.sqlite')
+        connection = sqlite3.connect(self.path)
         cursor = connection.cursor()
 
         query = "SELECT id, name, roast, ground, description, price, volume FROM coffee"
@@ -49,22 +52,25 @@ class CoffeeApp(QMainWindow):
         if selected_row != -1:
             coffee_id = self.tableWidget.item(selected_row, 0).text()
 
-            connection = sqlite3.connect('123.sqlite')
+            connection = sqlite3.connect('data/123.sqlite')
             cursor = connection.cursor()
             query = f"SELECT * FROM coffee WHERE id = {coffee_id}"
             cursor.execute(query)
             coffee_data = cursor.fetchone()
 
-            dialog = AddEditCoffeeForm(self, coffee_data)
+            dialog = AddEditCoffeeForm(self, coffee_data, path)
             if dialog.exec() == QDialog.DialogCode.Accepted:
                 self.load_data()
 
             connection.close()
 
-class AddEditCoffeeForm(QDialog):
-    def __init__(self, parent=None, coffee_data=None):
+class AddEditCoffeeForm(QDialog, Ui_AddEditCoffeeForm):
+    def __init__(self, parent=None, coffee_data=None, path=None):
         super().__init__(parent)
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
+        self.path = None
+        if path:
+            self.path = path
 
         self.cooffee_data = coffee_data
         if coffee_data:
@@ -89,7 +95,7 @@ class AddEditCoffeeForm(QDialog):
         price = self.priceSpinBox.value()
         volume = self.volumeSpinBox.value()
 
-        connection = sqlite3.connect('123.sqlite')
+        connection = sqlite3.connect(self.path)
         cursor = connection.cursor()
 
         if self.cooffee_data:
@@ -111,8 +117,10 @@ class AddEditCoffeeForm(QDialog):
         connection.close()
         self.accept()
 
+
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
