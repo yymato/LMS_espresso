@@ -10,7 +10,6 @@ class CoffeeApp(QMainWindow, Ui_MainWindow):
         super().__init__()
 
         self.setupUi(self)
-        self.load_data()
         self.refresh_button.clicked.connect(self.load_data)
 
         self.path = QFileDialog.getOpenFileName(self, 'Open SQl', '', '*.sqlite')
@@ -19,6 +18,7 @@ class CoffeeApp(QMainWindow, Ui_MainWindow):
 
         # Кнопка редактирования выбранной записи
         self.edit_button.clicked.connect(self.edit_selected_coffee)
+        self.load_data()
 
     def load_data(self):
         connection = sqlite3.connect(self.path)
